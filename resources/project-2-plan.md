@@ -100,6 +100,7 @@ Make a PR when you're done!
 - [ ] Naming conventions kept
 - [ ] No glaring logic errors
 ```
+
 `card` USER EXPERIENCE
 ```
 ### USER EXPERIENCE

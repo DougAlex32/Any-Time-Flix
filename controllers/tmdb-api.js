@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+require('dotenv').config();
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.get('/movie/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
+
             params: {
                 api_key: TMDB_API_KEY,
             },
