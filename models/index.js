@@ -1,43 +1,30 @@
-'use strict';
+require('dotenv').config();
+const mongoose = require('mongoose');
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+// import all models
+const User = require('./user');
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+console.log('mongo uri =>', process.env.MONGO_URI);
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+// connect to the database
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+// create connection object
+const db = mongoose.connection;
 
-module.exports = db;
+// once the database opens
+db.once('open', () => {
+    console.log('Connected to MongoDB Database: Mongoose App at HOST: ', db.host, 'PORT: ', db.port);
+});
+
+// if there is a database error
+db.on('error', (err) => {
+    console.log(`Database error: `, err);
+});
+
+module.exports = {
+    User
+}

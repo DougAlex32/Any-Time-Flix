@@ -5,6 +5,11 @@ const router = express.Router();
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const TMDB_HEADERS = {
+    accept: 'application/json',
+    Authorization: process.env.TMDB_AUTHORIZATION,
+  }
+
 
 // Search for movies
 router.get('/search/:query', async (req, res) => {
@@ -28,9 +33,14 @@ router.get('/movie/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
+
             params: {
                 api_key: TMDB_API_KEY,
             },
+            headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5YmY3YzFiNWNkMDNmNmI5MmVlZWJkNWYyOWNiODA0ZCIsInN1YiI6IjY0ZjdjZTc2ZmZjOWRlMDExYmU5MTUzZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.yhthook-VeFYqHZF8lCFHsGzbKFWfNgs2UKdxudg26A'
+              }
         });
         res.json(response.data);
     } catch (error) {
