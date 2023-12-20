@@ -113,7 +113,8 @@ router.get('/now-playing', async (req, res) => {
                 api_key: TMDB_API_KEY,
             },
         });
-        res.json(response.data);
+        console.log(response.data, 'response')
+        return res.json(response.data);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
