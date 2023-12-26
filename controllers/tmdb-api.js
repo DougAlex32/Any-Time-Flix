@@ -32,8 +32,10 @@ router.get('/movie/:id', async (req, res) => {
 
             params: {
                 api_key: TMDB_API_KEY,
+                append_to_response: 'credits,videos,images',
             },
         });
+        console.log('Movie details retrieved for:', response.data.title, 'on', new Date().toDateString(), 'at', new Date().toLocaleTimeString('en-US'))
         res.json(response.data);
     } catch (error) {
         console.error(error);
@@ -96,6 +98,7 @@ router.get('/popular', async (req, res) => {
         const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
             params: {
                 api_key: TMDB_API_KEY,
+
             },
         });
         res.json(response.data);
@@ -114,6 +117,37 @@ router.get('/now-playing', async (req, res) => {
             },
         });
         console.log(response.data, 'response')
+        return res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Get upcoming movies
+router.get('/upcoming', async (req, res) => {
+    try {
+        const response = await axios.get(`${TMDB_BASE_URL}/movie/upcoming`, {
+            params: {
+                api_key: TMDB_API_KEY,
+            },
+        });
+        console.log(response.data, 'response')
+        return res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Get top rated movies
+router.get('/top-rated', async (req, res) => {
+    try {
+        const response = await axios.get(`${TMDB_BASE_URL}/movie/top_rated`, {
+            params: {
+                api_key: TMDB_API_KEY,
+            },
+        });
         return res.json(response.data);
     } catch (error) {
         console.error(error);
