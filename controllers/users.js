@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new user with fake data
-router.post('/create', async (req, res) => {
+router.post('/signup', async (req, res) => {
     try {
         const newUser = new User({
             firstName: faker.name.firstName(),
