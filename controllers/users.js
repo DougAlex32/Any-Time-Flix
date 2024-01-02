@@ -3,6 +3,39 @@ const router = express.Router();
 const { faker } = require('@faker-js/faker');
 const User = require('../models/User');
 
+router.get('/', async (req, res) => {
+    try {
+        const users =   {users: [
+            {
+            _id: "5f9d88b18d6b1e0017b6d9b1",
+            firstName: "Shawn",
+            lastName: "Spencer",
+            jobTitle: "Psychic Detective",
+            email: "sspencer@email.com",
+            },
+            {
+            _id: "5f9d88b18d6b1e0017b6d9b2",
+            firstName: "Burton",
+            lastName: "Guster",
+            jobTitle: "Pharmaceutical Sales Representative",
+            email: "bguster@email.com",
+            },
+            {
+            _id: "5f9d88b18d6b1e0017b6d9b3",
+            firstName: "Carlton",
+            lastName: "Lassiter",
+            jobTitle: "Head Detective",
+            email: "classiter@email.com",
+            }
+        ]
+    }
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // Create a new user with fake data
 router.post('/signup', async (req, res) => {
     try {
