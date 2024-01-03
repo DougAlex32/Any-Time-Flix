@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { faker } = require('@faker-js/faker');
-const User = require('../models/User');
+// const { faker } = require('@faker-js/faker');
+const User = require('../models/user');
 
 router.get('/', async (req, res) => {
     try {
@@ -39,17 +39,26 @@ router.get('/', async (req, res) => {
 // Create a new user with fake data
 router.post('/signup', async (req, res) => {
     try {
+        console.log(req.body);
+
         const newUser = new User({
-            firstName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-            userName: faker.internet.userName(),
-            city: faker.address.city(),
-            state: faker.address.state(),
-            country: faker.address.country(),
-            email: faker.internet.email(),
-            password: faker.internet.password(),
-            bio: faker.lorem.sentence(),
-            profilePicture: faker.image.avatar(),
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            userName: req.body.userName,
+            city: req.body.city,
+            state: req.body.state,
+            country: req.body.country,
+            email: req.body.email,
+            password: req.body.password,
+            bio: req.body.bio,
+            profilePicture: req.body.profilePicture,
+            ratings: [],
+            watched : [],
+            watchList : [],
+            liked : [],
+            disliked : [],
+            playlists : [],
+        
         });
 
         await newUser.save();
