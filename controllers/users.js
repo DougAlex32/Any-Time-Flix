@@ -36,7 +36,7 @@ router.post('/signup', (req, res) => {
             state: req.body.state,
             country: req.body.country,
             email: req.body.email,
-            password: hashedPassword,
+            password: req.body.password,
             bio: req.body.bio,
             profilePicture: req.body.profilePicture,
             ratings: [],
@@ -81,6 +81,7 @@ router.post('/login', async (req, res) => {
 
     if (foundUser) {
         // user is in the DB
+        const hashedPassword = foundUser.password;
         let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
         console.log('Does the passwords match?', isMatch);
         if (isMatch) {
