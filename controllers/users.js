@@ -1,46 +1,33 @@
+// Imports
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-// const { faker } = require('@faker-js/faker');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const { JWT_SECRET } = process.env;
+
+// DB Models
 const User = require('../models/user');
 
-router.get('/', async (req, res) => {
-    try {
-        const users =   {users: [
-            {
-            _id: "5f9d88b18d6b1e0017b6d9b1",
-            firstName: "Shawn",
-            lastName: "Spencer",
-            jobTitle: "Psychic Detective",
-            email: "sspencer@email.com",
-            },
-            {
-            _id: "5f9d88b18d6b1e0017b6d9b2",
-            firstName: "Burton",
-            lastName: "Guster",
-            jobTitle: "Pharmaceutical Sales Representative",
-            email: "bguster@email.com",
-            },
-            {
-            _id: "5f9d88b18d6b1e0017b6d9b3",
-            firstName: "Carlton",
-            lastName: "Lassiter",
-            jobTitle: "Head Detective",
-            email: "classiter@email.com",
-            }
-        ]
-    }
-        res.json(users);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+// Controllers
+router.get('/test', (req, res) => {
+    res.json({ message: 'User endpoint OK! ✅' });
 });
 
-// Create a new user with fake data
-router.post('/signup', async (req, res) => {
-    try {
-        console.log(req.body);
+router.post('/signup', (req, res) => {
+    // POST - adding the new user to the database
+    console.log('===> Inside of /signup');
+    console.log('===> /register -> req.body',req.body);
 
+    User.findOne({ email: req.body.email })
+    .then(user => {
+        // if email already exists, a user will come back
+        if (user) {
+            // send a 400 response
+            return res.status(400).json({ message: 'Email already exists' });
+        } else {
+            // Create a new user
         const newUser = new User({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -49,7 +36,7 @@ router.post('/signup', async (req, res) => {
             state: req.body.state,
             country: req.body.country,
             email: req.body.email,
-            password: req.body.password,
+            password: hashedPassword,
             bio: req.body.bio,
             profilePicture: req.body.profilePicture,
             ratings: [],
@@ -61,68 +48,89 @@ router.post('/signup', async (req, res) => {
         
         });
 
-        await newUser.save();
+            // Salt and hash the password - before saving the user
+            bcrypt.genSalt(10, (err, salt) => {
+                if (err) throw Error;
 
-        res.status(201).json({ message: 'User created successfully', user: newUser });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Get a user by ID
-router.get('/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+                bcrypt.hash(newUser.password, salt, (err, hash) => {
+                    if (err) console.log('==> Error inside of hash', err);
+                    // Change the password in newUser to the hash
+                    newUser.password = hash;
+                    newUser.save()
+                    .then(createdUser => res.json({ user: createdUser}))
+                    .catch(err => {
+                        console.log('error with creating new user', err);
+                        res.json({ message: 'Error occured... Please try again.'});
+                    });
+                });
+            });
         }
-
-        res.json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    })
+    .catch(err => { 
+        console.log('Error finding user', err);
+        res.json({ message: 'Error occured... Please try again.'})
+    })
 });
 
-// Update user information by ID
-router.put('/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const updatedUserData = req.body; // Assuming the request body contains updated user data
+router.post('/login', async (req, res) => {
+    // POST - finding a user and returning the user
+    console.log('===> Inside of /login');
+    console.log('===> /login -> req.body', req.body);
 
-        const updatedUser = await User.findByIdAndUpdate(userId, updatedUserData, {
-            new: true, // Return the updated user data
-        });
+    const foundUser = await User.findOne({ email: req.body.email });
 
-        if (!updatedUser) {
-            return res.status(404).json({ error: 'User not found' });
+    if (foundUser) {
+        // user is in the DB
+        let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
+        console.log('Does the passwords match?', isMatch);
+        if (isMatch) {
+            // if user match, then we want to send a JSON Web Token
+            // Create a token payload
+            // add an expiredToken = Date.now()
+            // save the user
+            const payload = {
+                id: foundUser.id,
+                email: foundUser.email,
+                name: foundUser.name
+            }
+
+            jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+                if (err) {
+                    res.status(400).json({ message: 'Session has endedd, please log in again'});
+                }
+                const legit = jwt.verify(token, JWT_SECRET, { expiresIn: 60 });
+                console.log('===> legit', legit);
+                res.json({ success: true, token: `Bearer ${token}`, userData: legit });
+            });
+
+        } else {
+            return res.status(400).json({ message: 'Email or Password is incorrect' });
         }
-
-        res.json(updatedUser);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+        return res.status(400).json({ message: 'User not found' });
     }
 });
 
-// Delete a user by ID
-router.delete('/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const deletedUser = await User.findByIdAndDelete(userId);
-
-        if (!deletedUser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json({ message: 'User deleted successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+// private
+router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+    console.log('====> inside /profile');
+    console.log(req.body);
+    console.log('====> user')
+    console.log(req.user);
+    const { id, name, email } = req.user; // object with user object inside
+    res.json({ id, name, email });
 });
 
+router.get('/messages', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    console.log('====> inside /messages');
+    console.log(req.body);
+    console.log('====> user')
+    console.log(req.user);
+    const { id, name, email } = req.user; // object with user object inside
+    const messageArray = ['message 1', 'message 2', 'message 3', 'message 4', 'message 5', 'message 6', 'message 7', 'message 8', 'message 9'];
+    const sameUser = await User.findById(id);
+    res.json({ id, name, email, message: messageArray, sameUser });
+});
+
+// Exports
 module.exports = router;
