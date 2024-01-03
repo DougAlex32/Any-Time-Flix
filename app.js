@@ -2,6 +2,8 @@ const express = require('express');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const passport = require('passport');
+require('./config/passport')(passport);
 
 // create app
 const app = express();
@@ -11,6 +13,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride('_method'));
+app.use(passport.initialize());
 
 
 // connect to database

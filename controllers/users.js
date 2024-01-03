@@ -88,10 +88,24 @@ router.post('/login', async (req, res) => {
             // Create a token payload
             // add an expiredToken = Date.now()
             // save the user
+            console.log(foundUser, 'foundUser')
             const payload = {
                 id: foundUser.id,
                 email: foundUser.email,
-                name: foundUser.name
+                firstName: foundUser.firstName,
+                lastName: foundUser.lastName,
+                userName: foundUser.userName,
+                city: foundUser.city,
+                state: foundUser.state,
+                country: foundUser.country,
+                bio: foundUser.bio,
+                profilePicture: foundUser.profilePicture,
+                ratings: foundUser.ratings,
+                watched : foundUser.watched,
+                watchList : foundUser.watchList,
+                liked : foundUser.liked,
+                disliked : foundUser.disliked,
+                playlists : foundUser.playlists,
             }
 
             jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
@@ -119,6 +133,15 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
     console.log(req.user);
     const { id, name, email } = req.user; // object with user object inside
     res.json({ id, name, email });
+});
+
+router.get('/email/:email', passport.authenticate('jwt', { session: false }), (req, res) => {
+    console.log('====> inside /email');
+    console.log(req.body);
+    console.log('====> user')
+    console.log(req.user);
+    const userData = req.user;
+    res.json({ userData });
 });
 
 router.get('/messages', passport.authenticate('jwt', { session: false }), async (req, res) => {
