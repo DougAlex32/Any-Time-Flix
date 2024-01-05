@@ -131,16 +131,51 @@ router.post("/login", async (req, res) => {
 
 // PUT route
 router.put("/:id", async (req, res) => {
-    const { id } = req.params;
-    const { firstName, lastName, userName, city, state, country, email, bio, profilePicture } = req.body;
-    try {
-        let updatedUser = await User.findByIdAndUpdate(id, { firstName, lastName, userName, city, state, country, email, bio, profilePicture }, { new: true });
-        res.json(updatedUser);
-    } catch (error) {
-        console.log(error);
-    }
-}
-);
+  const { id } = req.params;
+  const {
+    firstName,
+    lastName,
+    userName,
+    city,
+    state,
+    country,
+    email,
+    bio,
+    profilePicture,
+  } = req.body;
+  try {
+    let updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        firstName,
+        lastName,
+        userName,
+        city,
+        state,
+        country,
+        email,
+        bio,
+        profilePicture,
+      },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// DELETE
+router.delete("/:id", async (req, res) => {
+  // find the user by their ID from the URL parameters
+  const { id } = req.params;
+  let deletedUser = await User.findByIdAndDelete(id);
+  if (!deletedUser) {
+    return res.status(400).json({ message: "No user with that id" });
+  } else {
+    res.status(200).json({ message: "Successfully deleted user" });
+  }
+});
 
 // private
 router.get(
