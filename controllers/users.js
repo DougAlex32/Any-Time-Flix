@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
         // user is in the DB
         const hashedPassword = foundUser.password;
         let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
-        console.log('Does the passwords match?', isMatch);
+        console.log('Do the passwords match?', isMatch);
         if (isMatch) {
             // if user match, then we want to send a JSON Web Token
             // Create a token payload
@@ -119,7 +119,7 @@ router.post('/login', async (req, res) => {
             });
 
         } else {
-            return res.status(400).json({ message: 'Email or Password is incorrect' });
+            return res.status(400).json({ message: 'Incorrect Password' });
         }
     } else {
         return res.status(400).json({ message: 'User not found' });
@@ -156,5 +156,16 @@ router.get('/messages', passport.authenticate('jwt', { session: false }), async 
     res.json({ id, name, email, message: messageArray, sameUser });
 });
 
+router.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, userName, city, state, country, email, bio, profilePicture } = req.body;
+    try {
+        let updatedUser = await User.findByIdAndUpdate(id, { firstName, lastName, userName, city, state, country, email, bio, profilePicture }, { new: true });
+        res.json(updatedUser);
+    } catch (error) {
+        console.log(error);
+    }
+}
+);
 // Exports
 module.exports = router;
