@@ -72,57 +72,55 @@ router.post("/signup", (req, res) => {
     });
 });
 
-router.post("/login", async (req, res) => {
-  // POST - finding a user and returning the user
-  console.log("===> Inside of /login");
-  console.log("===> /login -> req.body", req.body);
 
-  const foundUser = await User.findOne({ email: req.body.email });
+router.post('/login', async (req, res) => {
+    // POST - finding a user and returning the user
+    console.log('===> Inside of /login');
+    console.log('===> /login -> req.body', req.body);
 
-  if (foundUser) {
-    // user is in the DB
-    const hashedPassword = foundUser.password;
-    let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
-    console.log("Does the passwords match?", isMatch);
-    if (isMatch) {
-      // if user match, then we want to send a JSON Web Token
-      // Create a token payload
-      // add an expiredToken = Date.now()
-      // save the user
-      console.log(foundUser, "foundUser");
-      const payload = {
-        id: foundUser.id,
-        email: foundUser.email,
-        firstName: foundUser.firstName,
-        lastName: foundUser.lastName,
-        userName: foundUser.userName,
-        city: foundUser.city,
-        state: foundUser.state,
-        country: foundUser.country,
-        bio: foundUser.bio,
-        profilePicture: foundUser.profilePicture,
-        ratings: foundUser.ratings,
-        watched: foundUser.watched,
-        watchList: foundUser.watchList,
-        liked: foundUser.liked,
-        disliked: foundUser.disliked,
-        playlists: foundUser.playlists,
-      };
+    const foundUser = await User.findOne({ email: req.body.email });
 
-      jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
-        if (err) {
-          res
-            .status(400)
-            .json({ message: "Session has endedd, please log in again" });
-        }
-        const legit = jwt.verify(token, JWT_SECRET, { expiresIn: 60 });
-        console.log("===> legit", legit);
-        res.json({ success: true, token: `Bearer ${token}`, userData: legit });
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Email or Password is incorrect" });
+    if (foundUser) {
+        // user is in the DB
+        const hashedPassword = foundUser.password;
+        let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
+        console.log('Do the passwords match?', isMatch);
+        if (isMatch) {
+            // if user match, then we want to send a JSON Web Token
+            // Create a token payload
+            // add an expiredToken = Date.now()
+            // save the user
+            console.log(foundUser, 'foundUser')
+            const payload = {
+                id: foundUser.id,
+                email: foundUser.email,
+                firstName: foundUser.firstName,
+                lastName: foundUser.lastName,
+                userName: foundUser.userName,
+                city: foundUser.city,
+                state: foundUser.state,
+                country: foundUser.country,
+                bio: foundUser.bio,
+                profilePicture: foundUser.profilePicture,
+                ratings: foundUser.ratings,
+                watched : foundUser.watched,
+                watchList : foundUser.watchList,
+                liked : foundUser.liked,
+                disliked : foundUser.disliked,
+                playlists : foundUser.playlists,
+            }
+
+            jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+                if (err) {
+                    res.status(400).json({ message: 'Session has endedd, please log in again'});
+                }
+                const legit = jwt.verify(token, JWT_SECRET, { expiresIn: 60 });
+                console.log('===> legit', legit);
+                res.json({ success: true, token: `Bearer ${token}`, userData: legit });
+            });
+
+        } else {
+            return res.status(400).json({ message: 'Incorrect Password' });
     }
   } else {
     return res.status(400).json({ message: "User not found" });
@@ -229,5 +227,16 @@ router.get(
   }
 );
 
+router.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, userName, city, state, country, email, bio, profilePicture } = req.body;
+    try {
+        let updatedUser = await User.findByIdAndUpdate(id, { firstName, lastName, userName, city, state, country, email, bio, profilePicture }, { new: true });
+        res.json(updatedUser);
+    } catch (error) {
+        console.log(error);
+    }
+}
+);
 // Exports
 module.exports = router;
