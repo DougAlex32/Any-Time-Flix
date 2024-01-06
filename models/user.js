@@ -13,15 +13,43 @@ const userSchema = new mongoose.Schema({
     profilePicture: String,
     ratings : [{
         id: String,
+        original_title : String,
+        poster_path : String,
+        overview: String,
         rating: Number
     }],
-    watched : [{ id : String }],
-    watchList : [{ id : String }],
-    liked : [{ id : String }],
-    disliked : [{ id : String }],
+    watched : [{ 
+      id : String,
+      original_title : String,
+      poster_path : String,
+      overview: String,
+    }],
+    watchList : [{ 
+      id : String,
+      original_title : String,
+      poster_path : String,
+      overview: String,
+    }],
+    liked : [{ 
+      id : String,
+      original_title : String,
+      poster_path : String,
+      overview: String,
+    }],
+    disliked : [{ 
+      id : String,
+      original_title : String,
+      poster_path : String,
+      overview: String,
+    }],
     playlists : [{
       name : String,
-      videos : [{ id : String}]
+      videos : [{ 
+        id : String,
+        original_title : String,
+        poster_path : String,
+        overview: String,
+      }],
     }],
 }, { timestamps: true });
 
