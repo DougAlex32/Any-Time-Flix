@@ -265,7 +265,6 @@ router.put("/removeFromList/:listName/:id", async (req, res) => {
           { $pull: { [listName]: { id: movieId } } }, // Remove based on movie ID
           { new: true }
       );
-      console.log(updatedUser);
       res.json(updatedUser);
   } catch (error) {
       console.log(error);
