@@ -9,11 +9,11 @@ require('./config/passport')(passport);
 const app = express();
 
 // middleware
-app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(passport.initialize());
+app.use(cors());
 
 
 // connect to database
