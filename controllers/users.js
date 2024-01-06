@@ -242,18 +242,34 @@ router.put("/:id", async (req, res) => {
 router.put("/addToList/:listName/:id", async (req, res) => {
   const { listName, id } = req.params;
   const { movie } = req.body; // Assuming 'movie' is an object
-  console.log(movie);
   try {
       let updatedUser = await User.findByIdAndUpdate(
           id,
           { $push: { [listName]: movie } },
           { new: true }
       );
+      res.json(updatedUser);
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Error updating user's list" });
+  }
+});
+
+router.put("/removeFromList/:listName/:id", async (req, res) => {
+  const { listName, id } = req.params;
+  const { movieId } = req.body; // Use just the movie's ID
+  console.log(listName, movieId);
+  try {
+      let updatedUser = await User.findByIdAndUpdate(
+          id,
+          { $pull: { [listName]: { id: movieId } } }, // Remove based on movie ID
+          { new: true }
+      );
       console.log(updatedUser);
       res.json(updatedUser);
   } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Error updating user's watchlist" });
+      res.status(500).json({ message: "Error updating user's list" });
   }
 });
 
