@@ -4,36 +4,66 @@ Express authentication template using Passport + Flash messages + custom middlew
 
 ## What it includes
 
-* Sequelize user model / migration
-* Settings for PostgreSQL
+* MongoDB 
+* Settings for MongoDB and MongoDB Compass
 * Passport and passport-local for authentication
 * Sessions to keep user logged in between pages
 * Flash messages for errors and successes
 * Passwords that are hashed with BCrypt
-* EJS Templating and EJS Layouts
+
 
 ### User Model
 
 | Column Name | Data Type | Notes |
 | --------------- | ------------- | ------------------------------ |
 | id | Integer | Serial Primary Key, Auto-generated |
-| name | String | Must be provided |
+| firstName | String | Must be provided |
+| lastName | String | Must be provided |
 | email | String | Must be unique / used for login |
 | password | String | Stored as a hash |
+| userName | String | unique |
+| city | String | Must be provided |
+| state | String | Must be provided |
+| country | String | Must be provided |
+| bio | String | Optional |
+| profilePicture | href | Optional |
 | createdAt | Date | Auto-generated |
 | updatedAt | Date | Auto-generated |
 
-### Default Routes
+### Server Route
 
 | Method | Path | Location | Purpose |
 | ------ | ---------------- | -------------- | ------------------- |
-| GET | / | server.js | Home page |
-| GET | /auth/login | auth.js | Login form |
-| GET | /auth/signup | auth.js | Signup form |
-| POST | /auth/login | auth.js | Login user |
-| POST | /auth/signup | auth.js | Creates User |
-| GET | /auth/logout | auth.js | Removes session info |
-| GET | /profile | server.js | Regular User Profile |
+| GET | / | app.js | Test for server |
+
+### User Routes
+
+| Method | Path | Location | Purpose |
+| ------ | ---------------- | -------------- | ------------------- |
+| GET | /users/test | user.test.js | User is logged in |
+| GET | /users/profile | user.test.js | Regular user profile |
+| GET | users/email/:email | user.test.js | User email |
+| GET | users/messages | user.test.js | User authentication |
+| POST | /users/login | user.test.js | Login user |
+| POST | /users/signup | user.test.js | Creates User |
+| PUT | /users/:id | user.test.js | Update user info by id |
+| DELETE | /users/id | user.test.js | Delete user info by id |
+
+### TMDB API Routes
+
+| Method | Path | Location | Purpose |
+| ------ | ---------------- | -------------- | ------------------- |
+| GET | /api/search/:query| tmdb-api.test.js | Search for movies |
+| GET | /api/movie/:id| tmdb-api.test.js | Get movie details by id |
+| GET | /api/movie/:id/credits| tmdb-api.test.js | Get movie credits by id |
+| GET | /api/discover/:genre| tmdb-api.test.js | Discover movies by genre |
+| GET | /api/movie/:id/recommendations| tmdb-api.test.js | Get movie recommendations by id |
+| GET | /api/popular | tmdb-api.test.js | Get popular movies |
+| GET | /api/now-playing| tmdb-api.test.js | Get movies that is now playing |
+| GET | /api/upcoming| tmdb-api.test.js | Get upcoming movies |
+| GET | /api/top-rated| tmdb-api.test.js | Get top-rated movies |
+
+
 
 ## `1` Fork & Clone Project & Install Dependencies
 `1` The first thing that we are going to do is `fork` and `clone`
