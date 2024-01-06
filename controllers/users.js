@@ -238,5 +238,25 @@ router.put("/:id", async (req, res) => {
     }
 }
 );
+
+router.put("/addToList/:listName/:id", async (req, res) => {
+  const { listName, id } = req.params;
+  const { movie } = req.body; // Assuming 'movie' is an object
+  console.log(movie);
+  try {
+      let updatedUser = await User.findByIdAndUpdate(
+          id,
+          { $push: { [listName]: movie } },
+          { new: true }
+      );
+      console.log(updatedUser);
+      res.json(updatedUser);
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Error updating user's watchlist" });
+  }
+});
+
+
 // Exports
 module.exports = router;
