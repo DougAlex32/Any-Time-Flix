@@ -90,25 +90,36 @@ npm install
 
 ```json
 {
-  "development": {
-    "database": "express_auth_dev",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+  "name": "Any Time Flix",
+  "version": "1.0.0",
+  "description": "Your one stop shop for all your movie needs!",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node app.js",
+    "dev": "nodemon"
   },
-  "test": {
-    "database": "express_auth_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
-    "use_env_variable": "DATABASE_URL",
-    "dialect": "postgres",
-    "dialectOptions": {
-        "ssl": {
-          "require": true,
-          "rejectUnauthorized": false
-        }
-    }
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "axios": "^1.6.2",
+    "bcrypt": "^5.1.1",
+    "chai": "^4.3.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "jest": "^29.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "mocha": "^10.2.0",
+    "mongoose": "^7.2.4",
+    "nodemon": "^3.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "react": "^18.2.0",
+    "supertest": "^6.3.3"
   }
 }
 ```
@@ -126,33 +137,59 @@ sequelize db:create
 ```text
 ├── config
 │   └── config.json
+|    └── passport.js
+|    └── ppConfig.js 
 ├── controllers
 │   └── auth.js
+│   └── users.js
+│   └── index.js
+|   └── tmdb-api.js
+├── middleware
+│   └── isLoggedIn.js
+├── migrations
+│   └── 20230525020133-create-user.js
 ├── models
 │   └── index.js
+│   └── user.js
 ├── node_modules
 │   └── ...
 ├── public
 │   └── assets
+|       └── keep
 │   └── css
 │       └── style.css
+├── pages
+│   └── HomePage.js
 ├── test
 │   └── auth.test.js
 │   └── index.test.js
 │   └── profile.test.js
+│   └── tmdb-api.test.js
 │   └── user.test.js
+├── resources
+│   └── erd1.png
+│   └── erd2.png
+│   └── mike's user stories.md
+│   └── mike's user stories.md
+│   └── project-2-plan.md
+│   └── Screen Shot.png
 ├── views
 │   └── auth
 │       └── login.ejs
 │       └── signup.ejs
+│   └── partials
+│   │   └── footer.ejs
 │   └── index.ejs
 │   └── layout.ejs
-│   └── profile.ejs
+│   └── alerts.ejs
+├── .env
 ├── .gitignore
+├── app.js
 ├── package-lock.json
 ├── package.json
 ├── README.md
-├── server.js
+├── README1.md
+├── readme2.md
 ```
 
 - `config.json`: Where you need to configure your project to interact with your postgres database.
