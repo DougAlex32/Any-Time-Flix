@@ -12,7 +12,7 @@ const newUser = {
     state: "California",
     country: "USA",
     email: "markzuckerberg@facebook.com",
-    password: "Metamark",
+    password: "Metamark1",
     bio: "CEO of Meta",
     profilePicture: "picture.jpeg",
 }
@@ -31,4 +31,49 @@ describe('GET /users', () => {
     request(app).get('/users/test')
     .expect(200, done);
   });
+});
+
+describe('POST /users/signup', () => {
+  it('should create a signup user with valid email', (done) => {
+    const email = "markzuckerberg@email.com" 
+    request(app).post('/users/signup/').type('form').send({
+      firstName: "Mark",
+      lastName: "Zuckerberg",
+      userName: "metaFounder",
+      city: "Palo Alto",
+      state: "California",
+      country: "USA",
+      email: email,
+      password: "Metamark1",
+      bio: "CEO of Meta",
+      profilePicture: "picture.jpeg",
+  })
+    .then(response => {
+      console.log('new user created: ', response._body);
+      expect(response._body.user.email).to.be.equal(email);
+      done();
+    })
+    .catch(error => {
+      console.log("Error in creating new user: ", error);
+      throw error;
+    })
+  })
+  it('should return a 200 response', (done) => {
+    const email = "markzuckerberg@facebook.com";
+    request(app).post('/users/signup/')
+    .type('form')
+    .send({
+      firstName: "Mark",
+      lastName: "Zuckerberg",
+      userName: "metaFounder",
+      city: "Palo Alto",
+      state: "California",
+      country: "USA",
+      email: email,
+      password: "Metamark1",
+      bio: "CEO of Meta",
+      profilePicture: "picture.jpeg",
+  })
+  .expect(200, done);
+  })
 });
