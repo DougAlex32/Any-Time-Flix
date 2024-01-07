@@ -81,27 +81,65 @@ describe('POST /users/signup', () => {
 
 // update user info with PUT route
 describe('PUT /users/:id', () => {
-  it('should update an existing user information', (done) => {
-    // create a new user
-    let new = newUser;
-    new = { ...new, ...new.bio }
-    delete new.bio;
+  it('should update an existing user bio', (done) => {
     request(app).post('/users/signup/')
     .type('form')
     .send(newUser)
     .then(response => {
       console.log('new user created', response._body);
       // get the id from the newly created user and add to the update object
-      const newBio = response._body.user.bio;
-      console.log(userId);
-      request(app).put(`/users/${userId}`)
-      .type('form')
-      .send({
-        bio: newBio})
+      const userId = response._body.newUser._id;
+      console.log('---userId---', userId);
+      const newBio = "";
+      const updatedUser = Object.assign({}, newUser, {_id : userId,
+        bio: newBio });
+        // send a put request to update the users bio
+        request(app).put(`/users/${userId}`)
+        .type('form')
+        .send(updatedUser)
+        .then(updatedResponse => {
+          expect(updatedResponse.body.user.bio).toEqual(newBio);
+          done();
+        })
+        .catch(error => {
+          console.log("Error in updating user", error);
+          throw error;
+        })
+        })
+        .catch((err)=>{console.log("Error creating user", err)});
+        });
+        it('should return status 404 if no user is found', (done) =>
+        request(app).put("/users/1789365").send()
+        .expect(404, done));
+        });
+
+        // it('should not allow a non-existent user to be updated', (done)
+        // => {
+        //   var invalidID = "58791a0e63b24f";
+        //   request(app).put(`/users/${invalidID}`).expect(404
+        //     , done);
+        //     });
+        //     });
+
+
+
+
+// DELETE user route
+describe('DELETE /users/:id - delete user by ID', ()=> {
+  it('should return status 200 on successful deletion of existing user', (done) => {
+    let testUser = {username:'testDeleteUser' + Math.random(), password: 'testPassword123!'};
+    User.create(testUser)
+    .then(createdUser => {
+      request(app)
+      .delete(`/users/${createdUser._id}`)
+      .expect(200, done);
       })
-      .then(updatedResponse => {
-        expect(updatedResponse._body.user.address).to.be.equal(newBio);
-        done();
-      })
-  })
-})
+      .catch(err => {throw err});
+      });
+      });
+      it('should return status 404 when deleting a nonexistant user', (done
+        ) => {
+          request(app)
+          .delete('/users/0')
+          .expect(404, done);
+          });
