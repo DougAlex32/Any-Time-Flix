@@ -72,20 +72,20 @@ router.post("/signup", (req, res) => {
     });
 });
 
-
+// POST route for login
 router.post('/login', async (req, res) => {
-    // POST - finding a user and returning the user
-    console.log('===> Inside of /login');
-    console.log('===> /login -> req.body', req.body);
 
+    // Find user by email in the db
     const foundUser = await User.findOne({ email: req.body.email });
 
+    // If user exists in the db
     if (foundUser) {
-        // user is in the DB
-        const hashedPassword = foundUser.password;
-        let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
-        console.log('Do the passwords match?', isMatch);
-        if (isMatch) {
+
+      // Compare the submitted password with the password in the db      
+      let isMatch = await bcrypt.compare(req.body.password, foundUser.password);
+
+      // If password is a match, create a token and send to the client.
+      if (isMatch) {
             // if user match, then we want to send a JSON Web Token
             // Create a token payload
             // add an expiredToken = Date.now()
@@ -93,33 +93,20 @@ router.post('/login', async (req, res) => {
             console.log(foundUser, 'foundUser')
             const payload = {
                 id: foundUser.id,
-                email: foundUser.email,
-                firstName: foundUser.firstName,
-                lastName: foundUser.lastName,
-                userName: foundUser.userName,
-                city: foundUser.city,
-                state: foundUser.state,
-                country: foundUser.country,
-                bio: foundUser.bio,
-                profilePicture: foundUser.profilePicture,
-                ratings: foundUser.ratings,
-                watched : foundUser.watched,
-                watchList : foundUser.watchList,
-                liked : foundUser.liked,
-                disliked : foundUser.disliked,
-                playlists : foundUser.playlists,
+                email: foundUser.email
             }
-
+            
             jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
                 if (err) {
-                    res.status(400).json({ message: 'Session has endedd, please log in again'});
+                    res.status(400).json({ message: 'Session has ended, please log in again'});
                 }
                 const legit = jwt.verify(token, JWT_SECRET, { expiresIn: 60 });
                 console.log('===> legit', legit);
-                res.json({ success: true, token: `Bearer ${token}`, userData: legit });
+                res.json({ success: true, token: `Bearer ${token}`, loginData: legit});
             });
 
         } else {
+            // If password is not a match, send a 400 response with the message
             return res.status(400).json({ message: 'Incorrect Password' });
     }
   } else {
@@ -177,7 +164,7 @@ router.delete("/:id", async (req, res) => {
 
 // private
 router.get(
-  "/profile",
+  "/profile/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     console.log("====> inside /profile");
@@ -193,10 +180,11 @@ router.get(
   "/email/:email",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("headers:", req.headers)
     console.log("====> inside /email");
-    console.log(req.body);
+    // console.log(req.body);
     console.log("====> user");
-    console.log(req.user);
+    // console.log(req.user);
     const userData = req.user;
     res.json({ userData });
   }
@@ -265,7 +253,6 @@ router.put("/removeFromList/:listName/:id", async (req, res) => {
           { $pull: { [listName]: { id: movieId } } }, // Remove based on movie ID
           { new: true }
       );
-      console.log(updatedUser);
       res.json(updatedUser);
   } catch (error) {
       console.log(error);
