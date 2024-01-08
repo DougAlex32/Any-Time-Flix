@@ -1,5 +1,4 @@
 const express = require('express');
-const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
@@ -11,7 +10,6 @@ const app = express();
 // middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(methodOverride('_method'));
 app.use(passport.initialize());
 app.use(cors());
 
