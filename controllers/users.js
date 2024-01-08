@@ -230,6 +230,7 @@ router.put("/:id", async (req, res) => {
 router.put("/addToList/:listName/:id", async (req, res) => {
   const { listName, id } = req.params;
   const { movie } = req.body; // Assuming 'movie' is an object
+  console.log(listName, id, movie);
   try {
       let updatedUser = await User.findByIdAndUpdate(
           id,
@@ -245,12 +246,13 @@ router.put("/addToList/:listName/:id", async (req, res) => {
 
 router.put("/removeFromList/:listName/:id", async (req, res) => {
   const { listName, id } = req.params;
-  const { movieId } = req.body; // Use just the movie's ID
-  console.log(listName, movieId);
+  const { movie } = req.body;
+
+
   try {
       let updatedUser = await User.findByIdAndUpdate(
           id,
-          { $pull: { [listName]: { id: movieId } } }, // Remove based on movie ID
+          { $pull: { [listName]: { id: movie.id } } }, // Remove based on movie ID
           { new: true }
       );
       res.json(updatedUser);

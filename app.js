@@ -36,7 +36,6 @@ app.get('/', (req, res) => {
     return res.json({ message: 'Welcome to AnyTime Flix' });
 });
 
-
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
