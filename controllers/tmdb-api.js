@@ -186,4 +186,38 @@ router.get('/discover/year/:year', async (req, res) => {
     }
 });
 
+router.get('/discover/genre/:genre', async (req, res) => {
+    try {
+        const { genre } = req.params;
+        const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
+            params: {
+                api_key: TMDB_API_KEY,
+                with_genres: genre,
+            },
+        });
+        console.log(response.data, 'response')
+        return res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.get('/discover/rating/:rating', async (req, res) => {
+    try {
+        const { rating } = req.params;
+        const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
+            params: {
+                api_key: TMDB_API_KEY,
+                'vote_average.gte': rating,
+            },
+        });
+        console.log(response.data, 'response')
+        return res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;
