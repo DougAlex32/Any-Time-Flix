@@ -33,9 +33,15 @@ router.get('/movie/:id', async (req, res) => {
 
             params: {
                 api_key: TMDB_API_KEY,
-                append_to_response: 'credits,videos,images,watch/providers',
+                append_to_response: 'credits,videos,images',
             },
         });
+        const providers = await axios.get(`${TMDB_BASE_URL}/movie/${id}/watch/providers`, {
+            params: {
+                api_key: TMDB_API_KEY,
+            },
+        });
+        response.data.watch_providers = providers.data.results.US;
         console.log('Movie details retrieved for:', response.data.title, 'on', new Date().toDateString(), 'at', new Date().toLocaleTimeString('en-US'))
         res.json(response.data);
     } catch (error) {
