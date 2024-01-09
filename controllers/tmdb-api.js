@@ -60,13 +60,14 @@ router.get('/movie/:id/credits', async (req, res) => {
 });
 
 // Discover movies by genre
-router.get('/discover/:genre', async (req, res) => {
+router.get('/discover/:genre/:page', async (req, res) => {
     try {
         const { genre } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
             params: {
                 with_genres: genre,
                 api_key: TMDB_API_KEY,
+                page: req.params.page,
             },
         });
         res.json(response.data);
@@ -93,11 +94,12 @@ router.get('/movie/:id/recommendations', async (req, res) => {
 });
 
 // Get popular movies
-router.get('/popular', async (req, res) => {
+router.get('/popular/:page', async (req, res) => {
     try {
         const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
             params: {
                 api_key: TMDB_API_KEY,
+                page: req.params.page,
 
             },
         });
@@ -109,14 +111,14 @@ router.get('/popular', async (req, res) => {
 });
 
 // Get now playing movies
-router.get('/now-playing', async (req, res) => {
+router.get('/now-playing/:page', async (req, res) => {
     try {
         const response = await axios.get(`${TMDB_BASE_URL}/movie/now_playing`, {
             params: {
                 api_key: TMDB_API_KEY,
+                page: req.params.page,
             },
         });
-        console.log(response.data, 'response')
         return res.json(response.data);
     } catch (error) {
         console.error(error);
@@ -125,11 +127,12 @@ router.get('/now-playing', async (req, res) => {
 });
 
 // Get upcoming movies
-router.get('/upcoming', async (req, res) => {
+router.get('/upcoming/:page', async (req, res) => {
     try {
         const response = await axios.get(`${TMDB_BASE_URL}/movie/upcoming`, {
             params: {
                 api_key: TMDB_API_KEY,
+                page: req.params.page,
             },
         });
         console.log(response.data, 'response')
@@ -141,11 +144,12 @@ router.get('/upcoming', async (req, res) => {
 });
 
 // Get top rated movies
-router.get('/top-rated', async (req, res) => {
+router.get('/top-rated/:page', async (req, res) => {
     try {
         const response = await axios.get(`${TMDB_BASE_URL}/movie/top_rated`, {
             params: {
                 api_key: TMDB_API_KEY,
+                page: req.params.page,
             },
         });
         return res.json(response.data);
@@ -160,6 +164,7 @@ router.get('/genre/movie/list', async (req, res) => {
         const response = await axios.get(`${TMDB_BASE_URL}/genre/movie/list`, {
             params: {
                 api_key: TMDB_API_KEY,
+                page: req.params.page,
             },
         });
         res.json(response.data);
@@ -169,7 +174,7 @@ router.get('/genre/movie/list', async (req, res) => {
     }
 });
 
-router.get('/discover/year/:year', async (req, res) => {
+router.get('/discover/year/:year/:page', async (req, res) => {
     try {
         const { year } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
@@ -186,16 +191,19 @@ router.get('/discover/year/:year', async (req, res) => {
     }
 });
 
-router.get('/discover/genre/:genre', async (req, res) => {
+router.get('/discover/genre/:genre/:page', async (req, res) => {
     try {
         const { genre } = req.params;
+        console.log('searching for', genre)
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
             params: {
                 api_key: TMDB_API_KEY,
                 with_genres: genre,
+                include_adult: false,
+                sort_by: 'vote_count.desc',
+
             },
         });
-        console.log(response.data, 'response')
         return res.json(response.data);
     } catch (error) {
         console.error(error);
@@ -203,18 +211,39 @@ router.get('/discover/genre/:genre', async (req, res) => {
     }
 });
 
-router.get('/discover/rating/:rating', async (req, res) => {
+router.get('/discover/rating/:rating:/page', async (req, res) => {
     try {
         const { rating } = req.params;
+        console.log('Initial rating is:',rating)
+
+        if (rating > 10 || rating < 0) {
+            return res.json({ error: 'Rating must be between 0 and 10' });
+        }
+
+        let ratingBottom
+        let ratingTop
+
+        if (rating === '10') {
+            ratingTop = 10;
+        } else {
+            ratingTop = rating + '.4999999999999999';
+        }
+
+        if (rating === 1) {
+            ratingBottom = 0;
+        } else {
+            ratingBottom = rating - '.5';
+        }
+        console.log('Upper threshold:', Number(ratingTop), 'Lower threshold:', ratingBottom)
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
             params: {
                 api_key: TMDB_API_KEY,
-                'vote_average.lte': rating,
-                'vote_average.gte': rating - 2,
-                'vote_count.gte': 1000,
+                'vote_average.lte': ratingTop,
+                'vote_average.gte': ratingBottom,
+                'vote_count.gte': 5,
+                'inclue_adult': false,
             },
         });
-        console.log(response.data, 'response')
         return res.json(response.data);
     } catch (error) {
         console.error(error);
