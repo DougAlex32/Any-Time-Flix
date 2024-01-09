@@ -78,7 +78,7 @@ router.get('/discover/:genre/:page', async (req, res) => {
 });
 
 // Get movie recommendations by ID
-router.get('/movie/:id/recommendations', async (req, res) => {
+router.get('/movie/:id/recommendations/:page', async (req, res) => {
     try {
         const { id } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}/recommendations`, {
