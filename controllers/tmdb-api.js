@@ -209,7 +209,9 @@ router.get('/discover/rating/:rating', async (req, res) => {
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
             params: {
                 api_key: TMDB_API_KEY,
-                'vote_average.gte': rating,
+                'vote_average.lte': rating,
+                'vote_average.gte': rating - 2,
+                'vote_count.gte': 1000,
             },
         });
         console.log(response.data, 'response')
