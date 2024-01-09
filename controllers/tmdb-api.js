@@ -15,6 +15,7 @@ router.get('/search/:query', async (req, res) => {
             params: {
                 query,
                 api_key: TMDB_API_KEY,
+                include_adult: false,
             },
         });
         res.json(response.data);
@@ -68,6 +69,7 @@ router.get('/discover/:genre/:page', async (req, res) => {
                 with_genres: genre,
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         res.json(response.data);
@@ -85,6 +87,7 @@ router.get('/movie/:id/recommendations/:page', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         res.json(response.data);
@@ -101,6 +104,7 @@ router.get('/popular/:page', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
 
             },
         });
@@ -118,6 +122,7 @@ router.get('/now-playing/:page', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         return res.json(response.data);
@@ -134,6 +139,7 @@ router.get('/upcoming/:page', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         console.log(response.data, 'response')
@@ -151,6 +157,7 @@ router.get('/top-rated/:page', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         return res.json(response.data);
@@ -166,6 +173,7 @@ router.get('/genre/movie/list', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         res.json(response.data);
@@ -183,6 +191,7 @@ router.get('/discover/year/:year/:page', async (req, res) => {
                 api_key: TMDB_API_KEY,
                 primary_release_year: year,
                 page: req.params.page,
+                include_adult: false,
             },
         });
         console.log(response.data, 'response')
