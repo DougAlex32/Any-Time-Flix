@@ -155,4 +155,18 @@ router.get('/top-rated', async (req, res) => {
     }
 });
 
+router.get('/genre/movie/list', async (req, res) => {
+    try {
+        const response = await axios.get(`${TMDB_BASE_URL}/genre/movie/list`, {
+            params: {
+                api_key: TMDB_API_KEY,
+            },
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;
