@@ -169,4 +169,21 @@ router.get('/genre/movie/list', async (req, res) => {
     }
 });
 
+router.get('/discover/year/:year', async (req, res) => {
+    try {
+        const { year } = req.params;
+        const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
+            params: {
+                api_key: TMDB_API_KEY,
+                primary_release_year: year,
+            },
+        });
+        console.log(response.data, 'response')
+        return res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 module.exports = router;
