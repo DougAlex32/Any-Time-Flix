@@ -210,6 +210,8 @@ router.get('/discover/rating/:rating', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 'vote_average.lte': rating,
+                'vote_average.gte': rating - 2,
+                'vote_count.gte': 1000,
             },
         });
         console.log(response.data, 'response')
