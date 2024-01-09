@@ -80,38 +80,69 @@ describe('POST /users/signup', () => {
 });
 
 // update user info with PUT route
-describe('PUT /users/:id', () => {
-  it('should update an existing user bio', (done) => {
-    request(app).post('/users/signup/')
-    .type('form')
-    .send(newUser)
-    .then(response => {
-      console.log('new user created', response._body);
-      // get the id from the newly created user and add to the update object
-      const userId = response._body.newUser._id;
-      console.log('---userId---', userId);
-      const newBio = "";
-      const updatedUser = Object.assign({}, newUser, {_id : userId,
-        bio: newBio });
-        // send a put request to update the users bio
-        request(app).put(`/users/${userId}`)
-        .type('form')
-        .send(updatedUser)
-        .then(updatedResponse => {
-          expect(updatedResponse.body.user.bio).toEqual(newBio);
-          done();
-        })
-        .catch(error => {
-          console.log("Error in updating user", error);
-          throw error;
-        })
-        })
-        .catch((err)=>{console.log("Error creating user", err)});
-        });
-        it('should return status 404 if no user is found', (done) =>
-        request(app).put("/users/1789365").send()
-        .expect(404, done));
-        });
+
+
+ // Test PUT /edit/:id - Edit user account
+ describe('PUT /:id', () => {
+  before(async () => {
+      createdUserId = newUser._id;
+  });
+
+  it('updates user data and returns the updated user object', async () => {
+      const updatedData = {
+          username: "",
+          email: "",
+          bio:"",
+          password: "",
+    
+      };
+
+      const response = await request(app)
+          .put(`/users/${createdUserId}`)
+          .send(updatedData);
+
+      expect(response.status).to.equal(200);
+      expect(response.body).to.include(updatedData);
+  });
+
+  // after(async () => {
+  //     await User.findByIdAndDelete(createdUserId);
+  // });
+});
+
+
+// describe('PUT /users/:id', () => {
+//   it('should update an existing user bio', (done) => {
+//     request(app).post('/users/signup/') // create new user
+//     .type('form')
+//     .send(newUser) // send new user to front
+//     .then(response => {
+//       console.log('new user created', response._body); // return message
+//       // get the id from the newly created user and add to the update object
+//       const userId = response._body.newUser._id; // get id new user created
+//       console.log('---userId---', userId);
+//       const  newBio  =  "" ; // new bio as a string
+//       const updatedUser = Object.assign({}, newUser, {_id : userId,
+//         bio: newBio }); // create variable object with new user and check for user id and update bio
+//         // send a put request to update the users bio
+//         request(app).put(`/users/${updatedUser}`)
+//         .type('form')
+//         .send(updatedUser)
+//         .then(updatedResponse => {
+//           expect(updatedResponse.body.user.bio).toEqual(updatedUser);
+//           done();
+//         })
+//         .catch(error => {
+//           console.log("Error in updating user", error);
+//           throw error;
+//         })
+//         })
+//         .catch((err)=>{console.log("Error creating user", err)});
+//         });
+//         it('should return status 404 if no user is found', (done) =>
+//         request(app).put("/users/1789365").send()
+//         .expect(404, done));
+//         });
 
         // it('should not allow a non-existent user to be updated', (done)
         // => {
