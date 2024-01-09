@@ -181,6 +181,7 @@ router.get('/discover/year/:year/:page', async (req, res) => {
             params: {
                 api_key: TMDB_API_KEY,
                 primary_release_year: year,
+                page: req.params.page,
             },
         });
         console.log(response.data, 'response')
@@ -201,6 +202,7 @@ router.get('/discover/genre/:genre/:page', async (req, res) => {
                 with_genres: genre,
                 include_adult: false,
                 sort_by: 'vote_count.desc',
+                page: req.params.page,
 
             },
         });
@@ -241,7 +243,8 @@ router.get('/discover/rating/:rating:/page', async (req, res) => {
                 'vote_average.lte': ratingTop,
                 'vote_average.gte': ratingBottom,
                 'vote_count.gte': 5,
-                'inclue_adult': false,
+                'include_adult': false,
+                page: req.params.page,
             },
         });
         return res.json(response.data);
