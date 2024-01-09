@@ -33,7 +33,7 @@ router.get('/movie/:id', async (req, res) => {
 
             params: {
                 api_key: TMDB_API_KEY,
-                append_to_response: 'credits,videos,images',
+                append_to_response: 'credits,videos,images,watch/providers',
             },
         });
         console.log('Movie details retrieved for:', response.data.title, 'on', new Date().toDateString(), 'at', new Date().toLocaleTimeString('en-US'))
