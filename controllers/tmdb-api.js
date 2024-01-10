@@ -8,14 +8,16 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 // Search for movies
-router.get('/search/:query', async (req, res) => {
+router.get('/search/:query/:page', async (req, res) => {
     try {
         const { query } = req.params;
+        console.log('Search query is:', query)
         const response = await axios.get(`${TMDB_BASE_URL}/search/movie`, {
             params: {
                 query,
                 api_key: TMDB_API_KEY,
                 include_adult: false,
+                page: req.params.page,
             },
         });
         res.json(response.data);
