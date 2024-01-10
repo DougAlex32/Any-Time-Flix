@@ -1,5 +1,4 @@
 const express = require('express');
-const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
@@ -9,11 +8,10 @@ require('./config/passport')(passport);
 const app = express();
 
 // middleware
-app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(methodOverride('_method'));
 app.use(passport.initialize());
+app.use(cors());
 
 
 // connect to database
@@ -35,7 +33,6 @@ app.use('/movies', require('./controllers/tmdb-api'));
 app.get('/', (req, res) => {
     return res.json({ message: 'Welcome to AnyTime Flix' });
 });
-
 
 const PORT = process.env.PORT || 8000;
 
