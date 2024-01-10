@@ -229,7 +229,7 @@ router.get('/discover/rating/:rating/:page', async (req, res) => {
                 api_key: TMDB_API_KEY,
                 'vote_average.lte': ratingTop,
                 'vote_average.gte': ratingBottom,
-                'sort-by': 'vote_count.desc',
+                'sort_by': 'vote_count.desc',
                 'include_adult': false,
                 'vote_count.gte': 2,
                 page: req.params.page,
