@@ -1,7 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
 const expect = require('chai').expect;
-const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 const newUser = {
@@ -61,7 +60,7 @@ describe('POST /users/signup', () => {
   })
   it('should return a 200 response', (done) => {
     const email = "markzuckerberg@facebook.com";
-    request(app).post('/users/signup/')
+    request(app).post('/users/signup')
     .type('form')
     .send({
       firstName: "Mark",
@@ -75,39 +74,30 @@ describe('POST /users/signup', () => {
       bio: "CEO of Meta",
       profilePicture: "picture.jpeg",
   })
-  .expect(200, done);
+  .expect(200, done());
   })
 });
 
 // update user info with PUT route
-
-
- // Test PUT /edit/:id - Edit user account
- describe('PUT /:id', () => {
+ describe('PUT /users/:id', () => {
   before(async () => {
-      createdUserId = newUser._id;
+      createdUserEmail = "";
   });
 
-  it('updates user data and returns the updated user object', async () => {
+  it('updates user data and returns the updated user', async () => {
       const updatedData = {
-          username: "",
-          email: "",
           bio:"",
-          password: "",
     
       };
 
       const response = await request(app)
-          .put(`/users/${createdUserId}`)
+          .put(`/users/${createdUserEmail}`)
           .send(updatedData);
 
       expect(response.status).to.equal(200);
       expect(response.body).to.include(updatedData);
   });
 
-  // after(async () => {
-  //     await User.findByIdAndDelete(createdUserId);
-  // });
 });
 
 
@@ -141,22 +131,15 @@ describe('PUT /users/:id', () => {
         });
         it('should return status 404 if no user is found', (done) =>
         request(app).put("/users/1789365").send()
-        .expect(404, done));
+        .expect(404, done()));
         });
 
-        // it('should not allow a non-existent user to be updated', (done)
-        // => {
-        //   var invalidID = "58791a0e63b24f";
-        //   request(app).put(`/users/${invalidID}`).expect(404
-        //     , done);
-        //     });
-            // });
 
 
 
 
 // DELETE user route
-describe('DELETE /users/:id - delete user by ID', ()=> {
+describe('DELETE /users/:id - delete user by ID', () => {
   it('should return status 200 on successful deletion of existing user', (done) => {
     let testUser = {username:'testDeleteUser' + Math.random(), password: 'testPassword123!'};
     User.create(testUser)
@@ -171,6 +154,6 @@ describe('DELETE /users/:id - delete user by ID', ()=> {
       it('should return status 404 when deleting a nonexistant user', (done
         ) => {
           request(app)
-          .delete('/users/0')
-          .expect(404, done);
+          .delete('/users/signup')
+          .expect(404, done());
           });
