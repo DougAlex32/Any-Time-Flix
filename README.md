@@ -4,36 +4,66 @@ Express authentication template using Passport + Flash messages + custom middlew
 
 ## What it includes
 
-* Sequelize user model / migration
-* Settings for PostgreSQL
+* MongoDB 
+* Settings for MongoDB and MongoDB Compass
 * Passport and passport-local for authentication
 * Sessions to keep user logged in between pages
 * Flash messages for errors and successes
 * Passwords that are hashed with BCrypt
-* EJS Templating and EJS Layouts
+
 
 ### User Model
 
 | Column Name | Data Type | Notes |
 | --------------- | ------------- | ------------------------------ |
 | id | Integer | Serial Primary Key, Auto-generated |
-| name | String | Must be provided |
+| firstName | String | Must be provided |
+| lastName | String | Must be provided |
 | email | String | Must be unique / used for login |
 | password | String | Stored as a hash |
+| userName | String | unique |
+| city | String | Must be provided |
+| state | String | Must be provided |
+| country | String | Must be provided |
+| bio | String | Optional |
+| profilePicture | href | Optional |
 | createdAt | Date | Auto-generated |
 | updatedAt | Date | Auto-generated |
 
-### Default Routes
+### Server Route
 
 | Method | Path | Location | Purpose |
 | ------ | ---------------- | -------------- | ------------------- |
-| GET | / | server.js | Home page |
-| GET | /auth/login | auth.js | Login form |
-| GET | /auth/signup | auth.js | Signup form |
-| POST | /auth/login | auth.js | Login user |
-| POST | /auth/signup | auth.js | Creates User |
-| GET | /auth/logout | auth.js | Removes session info |
-| GET | /profile | server.js | Regular User Profile |
+| GET | / | app.js | Test for server |
+
+### User Routes
+
+| Method | Path | Location | Purpose |
+| ------ | ---------------- | -------------- | ------------------- |
+| GET | /users/test | user.test.js | User is logged in |
+| GET | /users/profile | user.test.js | Regular user profile |
+| GET | users/email/:email | user.test.js | User email |
+| GET | users/messages | user.test.js | User authentication |
+| POST | /users/login | user.test.js | Login user |
+| POST | /users/signup | user.test.js | Creates User |
+| PUT | /users/:id | user.test.js | Update user info by id |
+| DELETE | /users/id | user.test.js | Delete user info by id |
+
+### TMDB API Routes
+
+| Method | Path | Location | Purpose |
+| ------ | ---------------- | -------------- | ------------------- |
+| GET | /api/search/:query| tmdb-api.test.js | Search for movies |
+| GET | /api/movie/:id| tmdb-api.test.js | Get movie details by id |
+| GET | /api/movie/:id/credits| tmdb-api.test.js | Get movie credits by id |
+| GET | /api/discover/:genre| tmdb-api.test.js | Discover movies by genre |
+| GET | /api/movie/:id/recommendations| tmdb-api.test.js | Get movie recommendations by id |
+| GET | /api/popular | tmdb-api.test.js | Get popular movies |
+| GET | /api/now-playing| tmdb-api.test.js | Get movies that is now playing |
+| GET | /api/upcoming| tmdb-api.test.js | Get upcoming movies |
+| GET | /api/top-rated| tmdb-api.test.js | Get top-rated movies |
+
+
 
 ## `1` Fork & Clone Project & Install Dependencies
 `1` The first thing that we are going to do is `fork` and `clone`
@@ -60,25 +90,36 @@ npm install
 
 ```json
 {
-  "development": {
-    "database": "express_auth_dev",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+  "name": "Any Time Flix",
+  "version": "1.0.0",
+  "description": "Your one stop shop for all your movie needs!",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node app.js",
+    "dev": "nodemon"
   },
-  "test": {
-    "database": "express_auth_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  },
-  "production": {
-    "use_env_variable": "DATABASE_URL",
-    "dialect": "postgres",
-    "dialectOptions": {
-        "ssl": {
-          "require": true,
-          "rejectUnauthorized": false
-        }
-    }
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "axios": "^1.6.2",
+    "bcrypt": "^5.1.1",
+    "chai": "^4.3.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "jest": "^29.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
+    "mocha": "^10.2.0",
+    "mongoose": "^7.2.4",
+    "nodemon": "^3.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "react": "^18.2.0",
+    "supertest": "^6.3.3"
   }
 }
 ```
@@ -96,33 +137,59 @@ sequelize db:create
 ```text
 ├── config
 │   └── config.json
+|    └── passport.js
+|    └── ppConfig.js 
 ├── controllers
 │   └── auth.js
+│   └── users.js
+│   └── index.js
+|   └── tmdb-api.js
+├── middleware
+│   └── isLoggedIn.js
+├── migrations
+│   └── 20230525020133-create-user.js
 ├── models
 │   └── index.js
+│   └── user.js
 ├── node_modules
 │   └── ...
 ├── public
 │   └── assets
+|       └── keep
 │   └── css
 │       └── style.css
+├── pages
+│   └── HomePage.js
 ├── test
 │   └── auth.test.js
 │   └── index.test.js
 │   └── profile.test.js
+│   └── tmdb-api.test.js
 │   └── user.test.js
+├── resources
+│   └── erd1.png
+│   └── erd2.png
+│   └── mike's user stories.md
+│   └── mike's user stories.md
+│   └── project-2-plan.md
+│   └── Screen Shot.png
 ├── views
 │   └── auth
 │       └── login.ejs
 │       └── signup.ejs
+│   └── partials
+│   │   └── footer.ejs
 │   └── index.ejs
 │   └── layout.ejs
-│   └── profile.ejs
+│   └── alerts.ejs
+├── .env
 ├── .gitignore
+├── app.js
 ├── package-lock.json
 ├── package.json
 ├── README.md
-├── server.js
+├── README1.md
+├── readme2.md
 ```
 
 - `config.json`: Where you need to configure your project to interact with your postgres database.
