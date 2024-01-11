@@ -7,11 +7,17 @@ const router = express.Router();
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
-// Search for movies
+
+// GET /movies/test (Public) - test route
+router.get('/test', (req, res) => {
+    res.json({ message: 'TMDB endpoint OK! ✅' });
+    console.log("'movies/test' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+});
+
+// GET /movies/search/:query (Public) - search movies by title
 router.get('/search/:query/:page', async (req, res) => {
     try {
         const { query } = req.params;
-        console.log('Search query is:', query)
         const response = await axios.get(`${TMDB_BASE_URL}/search/movie`, {
             params: {
                 query,
@@ -21,18 +27,18 @@ router.get('/search/:query/:page', async (req, res) => {
             },
         });
         res.json(response.data);
+        console.log("'movies/search/"+query+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-// Get movie details by ID
+// GET /movies/movie/:id (Public) - get movie details by ID
 router.get('/movie/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
-
             params: {
                 api_key: TMDB_API_KEY,
                 append_to_response: 'credits,videos,images',
@@ -44,24 +50,9 @@ router.get('/movie/:id', async (req, res) => {
             },
         });
         response.data.watch_providers = providers.data.results.US;
-        console.log('Movie details retrieved for:', response.data.title, 'on', new Date().toDateString(), 'at', new Date().toLocaleTimeString('en-US'))
         res.json(response.data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// Get movie credits (cast and crew) by ID
-router.get('/movie/:id/credits', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}/credits`, {
-            params: {
-                api_key: TMDB_API_KEY,
-            },
-        });
-        res.json(response.data);
+        console.log("'movies/movie/"+id+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        console.log('Movie id is for', response.data.title)
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -80,6 +71,12 @@ router.get('/movie/:id/recommendations/:page', async (req, res) => {
             },
         });
         res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/movie/"+id+"/recommendations' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+            console.log(response.data)
+        } else {
+            console.log('More recommendations for movie:', id)
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -98,6 +95,11 @@ router.get('/popular/:page', async (req, res) => {
             },
         });
         res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/popular' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More popular movies loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -114,7 +116,12 @@ router.get('/now-playing/:page', async (req, res) => {
                 include_adult: false,
             },
         });
-        return res.json(response.data);
+        res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/now-playing' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More now playing movies loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -131,8 +138,12 @@ router.get('/upcoming/:page', async (req, res) => {
                 include_adult: false,
             },
         });
-        console.log(response.data, 'response')
-        return res.json(response.data);
+        res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/upcoming' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More upcoming movies loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -149,13 +160,19 @@ router.get('/top-rated/:page', async (req, res) => {
                 include_adult: false,
             },
         });
-        return res.json(response.data);
+        res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/top-rated' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More top rated movies loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// Get a list of genres
 router.get('/genre/movie/list', async (req, res) => {
     try {
         const response = await axios.get(`${TMDB_BASE_URL}/genre/movie/list`, {
@@ -166,32 +183,39 @@ router.get('/genre/movie/list', async (req, res) => {
             },
         });
         res.json(response.data);
+        console.log("'movies/genre/movie/list' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// Get movies by selected year
 router.get('/discover/year/:year/:page', async (req, res) => {
     try {
-        console.log(req.params)
         const { year } = req.params;
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
             params: {
                 api_key: TMDB_API_KEY,
                 primary_release_year: year,
                 page: req.params.page,
+                sort_by: 'vote_count.desc',
                 include_adult: false,
             },
         });
-        console.log('response')
-        return res.json(response.data);
+        res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/discover/year/"+year+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More movies from', year, 'loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// Get movies by selected genre
 router.get('/discover/genre/:genre/:page', async (req, res) => {
     try {
         const { genre } = req.params;
@@ -205,25 +229,30 @@ router.get('/discover/genre/:genre/:page', async (req, res) => {
 
             },
         });
-        return res.json(response.data);
+        res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/discover/genre/"+genre+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More movies from', genre, 'loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// Get movies by selected rating (range from rating - .5 to rating + .49)
 router.get('/discover/rating/:rating/:page', async (req, res) => {
     try {
         const { rating } = req.params;
-        let ratingBottom
-        console.log('Initial rating is:',rating)
         const ratingTop = Number(rating) + .4;
-        if (rating > 1) {
-            ratingBottom = rating - .5;
-        } else {
-            ratingBottom = 0;
+        let ratingBottom = () => {
+            if (rating > 1) {
+                return (rating - .5)
+            } else {
+                return 0;
+            }
         }
-        console.log('rating range is between:', ratingBottom, 'and', ratingTop)
         const response = await axios.get(`${TMDB_BASE_URL}/discover/movie`, {
             params: {
                 api_key: TMDB_API_KEY,
@@ -235,7 +264,12 @@ router.get('/discover/rating/:rating/:page', async (req, res) => {
                 page: req.params.page,
             },
         });
-        return res.json(response.data);
+        res.json(response.data);
+        if (req.params.page = 1) {
+            console.log("'movies/discover/rating/"+rating+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+        } else {
+            console.log('More movies from', rating, 'loaded')
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
