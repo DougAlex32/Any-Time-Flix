@@ -139,8 +139,7 @@ all data is from TMDB
 ├── app.js
 ├── package-lock.json
 ├── package.json
-├── README.md
-└── README1.md
+└── README.md
 ```
 
 # Development Notes
@@ -164,3 +163,5 @@ all data is from TMDB
 * As a user, I want to be able to add a movie to my playlist
 * As a user, I want to access my playlist at anytime. I want to be able to save for later, see the high rated movies by IMBD
 ```
+## Wireframe
+<img src="resources/wireframe (Douglas).png" height="400px">
