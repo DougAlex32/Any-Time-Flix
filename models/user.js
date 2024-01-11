@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
       id :               { type : String },
       original_title :   { type : String },
       poster_path :      { type : String },
-      overview:          { type : String },
+      overview:          { type : String }
     }],
     playlists : [{
       name :             { type : String },
@@ -48,10 +48,10 @@ const userSchema = new mongoose.Schema({
         id :             { type : String },
         original_title : { type : String },
         poster_path :    { type : String },
-        overview:        { type : String },
+        overview:        { type : String }
       }],
     }],
-}, { timestamps:    { type : true });
+}, { timestamps:    { type : true }});
 
 const User = mongoose.model('User', userSchema);
 
