@@ -19,8 +19,8 @@ Node.js and Express backend for the Any Time Flix webapp.
 `6` Set up an API account at [developer.themoviedb.org](https://developer.themoviedb.org/docs/getting-started)\
 `7` Create or open you /.env file and make sure the following lines are inside it:
 
->TMDB_API_KEY= (your API key from TMDB goes here)
->MONGODB_URI=  (your connection url for your database goes here)
+>TMDB_API_KEY= (your API key from TMDB goes here)\
+>MONGODB_URI=  (your connection url for your database goes here)\
 >JWT_SECRET=   (this can be any string of characters you want to use, no spaces)
 
 `8` Load the server by running
