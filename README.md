@@ -98,8 +98,8 @@ all data is from TMDB
 | __DELETE__ | __/id__ | [users.js](controllers/users.js#L146) | Find the user in the db based on `id`, remove users data, and return a `status 200` and a `message` |
 | __PUT__ | __/addToList/:listName/:id__ | [users.js](controllers/users.js#L163) | __add__ the object from `req.body.movie` to the list determined by `req.params.listName`, and returns the `updatedUser` |
 | __PUT__ | __/removeFromList/:listName/:id__ | [users.js](controllers/users.js#L195) | , __remove__ the object from `req.body.movie` from the list determined by `req.params.listName`, and returns the `updatedUser` |
-| __GET__ | __/refreshData/ | [users.js](controllers/users.js#222) | Fetch user data and return to client |
-| __GET__ | _/updateTokenExpiration__ | [users.js](controllers/users.js#232) | Reset the expiration timeout on token |
+| __GET__ | __/refreshData/__ | [users.js](controllers/users.js#222) | Fetch user data and return to client |
+| __GET__ | __/updateTokenExpiration/__ | [users.js](controllers/users.js#232) | Reset the expiration timeout on token |
 
 ### /movies
 
