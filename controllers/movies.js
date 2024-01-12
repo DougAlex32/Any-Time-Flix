@@ -7,14 +7,13 @@ const router = express.Router();
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
-
 // GET /movies/test (Public) - test route
 router.get('/test', (req, res) => {
     res.json({ message: 'TMDB endpoint OK! ✅' });
     console.log("'movies/test' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
 });
 
-// GET /movies/search/:query (Public) - search movies by title
+// GET /movies/search/:query/:page (Public) - search movies by title
 router.get('/search/:query/:page', async (req, res) => {
     try {
         const { query } = req.params;
