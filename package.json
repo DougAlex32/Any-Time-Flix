@@ -5,6 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "mocha",
+    "test_app": "mocha --recursive ./test/app.test.js",
+    "test_users": "mocha --recursive ./test/users.test.js",
+    "test_movies": "mocha --recursive ./test/movies.test.js",
     "start": "node app.js",
     "dev": "nodemon"
   },
