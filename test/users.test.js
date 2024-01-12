@@ -60,7 +60,7 @@ describe("POST '/users/login' route", function () {
     expect(res.body).to.have.property('success').to.equal(true);
     expect(res.body).to.have.property('token').to.be.a('string');
     expect(res.body).to.have.property('userData').to.be.an('object');
-    expect(res.body.userData).to.have.property('id');
+    expect(res.body.userData).to.have.property('firstName');
     expect(res.body.userData).to.have.property('email').to.equal(testUser.email);
   });
 });
@@ -86,12 +86,12 @@ describe("PUT '/users/' route", function () {
   });
 });
 
-// /users/addToList/:listName/:id PUT route
-describe("PUT '/users/addToList/:listName/:id' route", function () {
+// /users/addToList/:listName/ PUT route
+describe("PUT '/users/addToList/:listName/' route", function () {
   it('should add movie to list', async function () {
     const token = testToken;
     const res = await request(app)
-      .put(`/users/addToList/watchList/${testUser._id}`, {movie: 11})
+      .put(`/users/addToList/watchList/`, {movie: 11})
       .set('Authorization', `${token}`);
     expect(res.status).to.equal(200);
     expect(res.body).to.be.an('object');
@@ -99,12 +99,12 @@ describe("PUT '/users/addToList/:listName/:id' route", function () {
   });
 });
 
-// /users/removeFromList/:listName/:id PUT route
-describe("PUT '/users/removeFromList/:listName/:id' route", function () {
+// /users/removeFromList/:listName/ PUT route
+describe("PUT '/users/removeFromList/:listName/' route", function () {
   it('should remove movie from list', async function () {
     const token = testToken;
     const res = await request(app)
-      .put(`/users/removeFromList/watchList/${testUser._id}`)
+      .put(`/users/removeFromList/watchList/`)
       .set('Authorization', `${token}`)
       .send({movie: {id: 11}});
 
