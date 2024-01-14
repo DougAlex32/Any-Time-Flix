@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 require('dotenv').config();
 
+const Search = require('../models/search');
+
 const router = express.Router();
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
@@ -25,6 +27,24 @@ router.get('/search/:query/:page', async (req, res) => {
                 page: req.params.page,
             },
         });
+        // if results exist, save query to database
+        if (response.data.results.length > 0) {
+            // see if query exists in database
+            const globalQuery = await Search.findOne({ query });
+            // if query exists, update timesQueried
+            if (globalQuery) {
+                globalQuery.timesQueried += 1;
+                globalQuery.top5Results = response.data.results.slice(0, 5)
+                await globalQuery.save();
+            }
+            // if query does not exist, create new query
+            else {
+                const newQuery = await Search.create({ query, timesQueried: 1 });
+                newQuery.top5Results = response.data.results.slice(0, 5)
+                await newQuery.save();
+            }
+        }
+
         res.json(response.data);
         console.log("'movies/search/"+query+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
     } catch (error) {

@@ -51,6 +51,7 @@ const userSchema = new mongoose.Schema({
         overview:        { type : String }
       }],
     }],
+    recentSearches : [String],
 }, { timestamps:    { type : true }});
 
 const User = mongoose.model('User', userSchema);

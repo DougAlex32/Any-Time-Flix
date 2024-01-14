@@ -261,6 +261,48 @@ router.get("/updateTokenExpiration", passport.authenticate('jwt', { session: fal
     res.status(500).json({ message: "Error updating token expiration" });
   }
 });
+router.post("/updateRecentSearches/", passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const decryptedToken = jwt.verify(req.headers.authorization.split(" ")[1], JWT_SECRET);
+  const id = decryptedToken.id;
+  const { query } = req.body;
+  // Find the user by id
+  try {
+    let updatedUserData = await User.findByIdAndUpdate(
+      id,
+      { $addToSet: { recentSearches: { $each: [query], $position: 0 } } }, // Use $each to add the query to the beginning of the array
+      { new: true, upsert: true } // Use upsert: true to create the document if it doesn't exist
+    );
+
+    // Limit the length of recentSearches to 25 and remove duplicates
+    if (updatedUserData.recentSearches.length > 25) {
+      updatedUserData.recentSearches = updatedUserData.recentSearches.slice(0, 25);
+    }
+
+    // Save the updated user data
+    await updatedUserData.save();
+
+    // also add search to global searches
+    const newSearch = await GlobalSearch.findOne({ query: query });
+    if (newSearch) {
+      // If the search already exists, increment the timesQueried field
+      newSearch.timesQueried++;
+      await newSearch.save();
+    } else {
+      // If the search doesn't exist, create a new search
+      await GlobalSearch.create({ query: query, timesQueried: 1 });
+    }
+
+    // Send updated user back as a JSON response and log a success message
+    res.json({ updatedUserData, message: "Search query added to recent searches" });
+    console.log("'/users/updateRecentSearches' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
+    console.log("User", updatedUserData.id, "successfully added", query, "to recent searches");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error updating user's recent searches" });
+  }
+});
+
+
 
 // Exports
 module.exports = router;

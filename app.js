@@ -27,6 +27,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 // routes for controllers
 app.use('/users', require('./controllers/users'));
 app.use('/movies', require('./controllers/movies'));
+app.use('/searches', require('./controllers/searches'));
+app.use('/utilities', require('./controllers/utilities'));
 
 // GET / (Public) - test route
 app.get('/', (req, res) => {
