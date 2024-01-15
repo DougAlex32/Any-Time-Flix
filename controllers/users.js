@@ -286,7 +286,5 @@ router.post("/updateRecentSearches/", passport.authenticate('jwt', { session: fa
   }
 });
 
-
-
 // Exports
 module.exports = router;
