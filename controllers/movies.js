@@ -9,6 +9,16 @@ const router = express.Router();
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
+const extractMpaaCertification = (releaseDates) => {
+    let mpaaCertification;
+    releaseDates.forEach((release) => {
+        if (release.iso_3166_1 === 'US') {
+            mpaaCertification = release.release_dates[0].certification;
+        }
+    });
+    return mpaaCertification || 'not rated';
+}
+
 // GET /movies/test (Public) - test route
 router.get('/test', (req, res) => {
     res.json({ message: 'TMDB endpoint OK! ✅' });
@@ -60,7 +70,7 @@ router.get('/movie/:id', async (req, res) => {
         const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
             params: {
                 api_key: TMDB_API_KEY,
-                append_to_response: 'credits,videos,images',
+                append_to_response: 'credits,videos,images,release_dates',
             },
         });
         const providers = await axios.get(`${TMDB_BASE_URL}/movie/${id}/watch/providers`, {
@@ -68,7 +78,8 @@ router.get('/movie/:id', async (req, res) => {
                 api_key: TMDB_API_KEY,
             },
         });
-        response.data.watch_providers = providers.data.results.US;
+        response.data.mpaa_certification = extractMpaaCertification(response.data.release_dates.results); // get US rating
+        response.data.watch_providers = providers.data.results.US; // get US streaming providers
         res.json(response.data);
         console.log("'movies/movie/"+id+"' route hit on", new Date().toDateString(), "at", new Date().toLocaleTimeString("en-US"));
         console.log('Movie id is for', response.data.title)
@@ -110,7 +121,6 @@ router.get('/popular/:page', async (req, res) => {
                 api_key: TMDB_API_KEY,
                 page: req.params.page,
                 include_adult: false,
-
             },
         });
         res.json(response.data);
