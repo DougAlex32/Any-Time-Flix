@@ -269,28 +269,12 @@ router.post("/updateRecentSearches/", passport.authenticate('jwt', { session: fa
   try {
     let updatedUserData = await User.findByIdAndUpdate(
       id,
-      { $addToSet: { recentSearches: { $each: [query], $position: 0 } } }, // Use $each to add the query to the beginning of the array
-      { new: true, upsert: true } // Use upsert: true to create the document if it doesn't exist
+    // Add the query to the beginning of the recentSearches array
+      { $push: { recentSearches: { $each: [query], $position: 0 } } },
+      { new: true } 
     );
-
-    // Limit the length of recentSearches to 25 and remove duplicates
-    if (updatedUserData.recentSearches.length > 25) {
-      updatedUserData.recentSearches = updatedUserData.recentSearches.slice(0, 25);
-    }
-
     // Save the updated user data
     await updatedUserData.save();
-
-    // also add search to global searches
-    const newSearch = await GlobalSearch.findOne({ query: query });
-    if (newSearch) {
-      // If the search already exists, increment the timesQueried field
-      newSearch.timesQueried++;
-      await newSearch.save();
-    } else {
-      // If the search doesn't exist, create a new search
-      await GlobalSearch.create({ query: query, timesQueried: 1 });
-    }
 
     // Send updated user back as a JSON response and log a success message
     res.json({ updatedUserData, message: "Search query added to recent searches" });
